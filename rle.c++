@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 string runLengthEncoding(const string& input) {
@@ -13,12 +14,21 @@ string runLengthEncoding(const string& input) {
             i++;
         }
         encoded += input[i];
-        encoded += to_string(count);
+
+        // Manually convert count to string and append
+        if (count >= 10) {
+            // For counts >= 10
+            encoded += (count / 10) + '0'; // Tens place
+            encoded += (count % 10) + '0'; // Ones place
+        }
+        else {
+            // For counts < 10
+            encoded += count + '0';
+        }
     }
 
     return encoded;
 }
-
 string runLengthDecoding(const string& encoded) {
     string decoded = "";
     int n = encoded.length();
@@ -26,8 +36,15 @@ string runLengthDecoding(const string& encoded) {
     for (int i = 0; i < n; i++) {
         char currentChar = encoded[i];
         i++;
-        int count = encoded[i] - '0';
-        
+
+        // Get the count directly from encoded string
+        int count = 0;
+        while (i < n && isdigit(encoded[i])) {
+            count = count * 10 + (encoded[i] - '0'); // Build the count number
+            i++;
+        }
+        i--; // Adjust index after the loop
+
         for (int j = 0; j < count; j++) {
             decoded += currentChar;
         }
@@ -35,17 +52,17 @@ string runLengthDecoding(const string& encoded) {
 
     return decoded;
 }
-
 int main() {
     string input;
-    cout << "Enter the string to be encoded: ";
-    cin >> input;
+    cout << "Enter: " << endl;
+    getline(cin, input);
+
 
     string encoded = runLengthEncoding(input);
-    cout << "Encoded string: " << encoded << endl;
+    cout << "Encoded string: " << encoded << endl; // Expected: a10b11
 
     string decoded = runLengthDecoding(encoded);
-    cout << "Decoded string: " << decoded << endl;
+    cout << "Decoded string: " << decoded << endl; // Expected: aaaaaaaaaabbbbbbbbbbb
 
     return 0;
 }
